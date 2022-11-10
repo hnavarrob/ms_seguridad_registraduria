@@ -1,7 +1,10 @@
 package registraduria.seguridad.Controladores;
 
 import registraduria.seguridad.Modelos.Usuario;
+import registraduria.seguridad.Modelos.Rol;
 import registraduria.seguridad.Repositorios.RepositorioUsuario;
+import registraduria.seguridad.Repositorios.RepositorioRol;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,9 @@ import java.security.NoSuchAlgorithmException;
 public class ControladorUsuario {
     @Autowired
     private RepositorioUsuario miRepositorioUsuario;
+
+    @Autowired
+    private RepositorioRol miRepositorioRol;
 
     @GetMapping("")
     public List<Usuario> index(){
@@ -56,6 +62,28 @@ public class ControladorUsuario {
                 .orElse(null);
         if (usuarioActual!=null){
             this.miRepositorioUsuario.delete(usuarioActual);
+        }
+    }
+
+    /**
+     * Relación (1 a n) entre rol y usuario
+     * @param id
+     * @param id_rol
+     * @return
+     */
+    @PutMapping("{id}/rol/{id_rol}")
+    public Usuario asignarRolAUsuario(@PathVariable String id,@PathVariable String id_rol) {
+        Usuario usuarioActual = this.miRepositorioUsuario
+                .findById(id)
+                .orElse(null);
+        Rol rolActual = this.miRepositorioRol
+                .findById(id_rol)
+                .orElse(null);
+        if (usuarioActual != null && rolActual != null) {
+            usuarioActual.setRol(rolActual);
+            return this.miRepositorioUsuario.save(usuarioActual);
+        } else {
+            return null;
         }
     }
     public String convertirSHA256(String password) {

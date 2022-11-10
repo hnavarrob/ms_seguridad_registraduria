@@ -23,7 +23,6 @@ public class ControladorRol {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Rol create(@RequestBody  Rol infoRol){
-
         return this.miRepositorioRol.save(infoRol);
     }
     @GetMapping("{id}")
